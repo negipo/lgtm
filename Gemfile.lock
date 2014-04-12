@@ -5,6 +5,8 @@ GEM
     dalli (2.7.0)
     haml (4.0.5)
       tilt
+    heroku-deflater (0.5.3)
+      rack (>= 1.4.5)
     multi_json (1.9.2)
     rack (1.5.2)
     rack-cache (1.2)
@@ -33,6 +35,7 @@ PLATFORMS
 DEPENDENCIES
   dalli
   haml
+  heroku-deflater
   rack
   rack-cache
   rmagick
