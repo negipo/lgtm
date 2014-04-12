@@ -2,14 +2,8 @@
 
 require 'bundler/setup'
 Bundler.require
-require 'sinatra'
-require 'sinatra/reloader'
-require 'dalli'
-require 'rack-cache'
 require 'net/http'
-require 'haml'
 require 'uri'
-require 'pry'
 
 get '/*' do
   if request.path_info == '/'
@@ -68,11 +62,11 @@ class Lgtm
   LGTM_IMAGE_WIDTH = 1_000
 
   def initialize(blob)
-    @sources = Magick::ImageList.new.from_blob(blob)
+    @sources = ::Magick::ImageList.new.from_blob(blob)
   end
 
   def lgtmify
-    images = Magick::ImageList.new
+    images = ::Magick::ImageList.new
     width = @sources.first.columns
     @sources.each do |source|
       images << lgtmify_each(source, width)
@@ -90,11 +84,11 @@ class Lgtm
     scale = width.to_f / LGTM_IMAGE_WIDTH
     return @lgtm_image[scale] if @lgtm_image[scale]
 
-    @lgtm_image[scale] = Magick::ImageList.new('./lgtm.gif').scale(scale)
+    @lgtm_image[scale] = ::Magick::ImageList.new('./lgtm.gif').scale(scale)
   end
 
   def lgtmify_each(source, width)
     lgtm = lgtm_image(width)
-    source.composite!(lgtm, Magick::CenterGravity, Magick::OverCompositeOp)
+    source.composite!(lgtm, ::Magick::CenterGravity, ::Magick::OverCompositeOp)
   end
 end
