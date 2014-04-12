@@ -27,8 +27,8 @@ module Lgtm
       end
     end
 
-    def build_raw_uri_by_splat(path_info)
-      uri = path_info.sub(/\A\//, '')
+    def raw_uri_by_path_info
+      uri = request.path_info.sub(/\A\//, '')
       uri.sub(/\A(http):\//) do
         "#{$1}://"
       end
@@ -54,8 +54,7 @@ module Lgtm
     get '/*' do
       cache_control :public, max_age: CACHE_MAX_AGE
 
-      raw_uri = build_raw_uri_by_splat(request.path_info)
-      response = fetch(raw_uri)
+      response = fetch(raw_uri_by_path_info)
       unless /gif/ === response.content_type
         return 'only animated gif supported'
       end
