@@ -1,0 +1,15 @@
+!!!
+%html
+  %head
+    %meta{ content: "text/html; charset=utf-8", "http-equiv" => "content-type" }
+    %title
+      lgtm
+  %body
+    #description
+      http://#{@domain}/:path_of_image
+    #bookmarklet_wrapper
+      bookmarklet:
+      %a{ href: "javascript:(function() {location.href = 'http://#{@domain}/' + location.href;})()" }
+        LGTM
+    %img{ src: '/http://37.media.tumblr.com/cffd5ee424b5ce5ed2bd6b63db62de03/tumblr_n3n3qtBwV21tx3jwgo1_500.gif' }
+
