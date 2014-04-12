@@ -5,6 +5,8 @@ Bundler.require
 require 'net/http'
 require 'uri'
 
+CACHE_MAX_AGE = 10 * 24 * 3600 # 10 days
+
 get '/*' do
   if request.path_info == '/'
     return render_index
@@ -12,7 +14,7 @@ get '/*' do
     return
   end
 
-  cache_control :public, max_age: 10
+  cache_control :public, max_age: CACHE_MAX_AGE
 
   raw_uri = build_raw_uri_by_splat(request.path_info)
   response = fetch(raw_uri)
