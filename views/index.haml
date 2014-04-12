@@ -7,8 +7,14 @@
   %body
     #description
       http://#{@domain}/:url_of_animated_gif
+
     #bookmarklet_wrapper
       bookmarklet:
       %a{ href: "javascript:(function() {location.href = 'http://#{@domain}/' + location.href;})()" }
         LGTM
-    %img{ src: '/http://25.media.tumblr.com/ab3f57251da1addfe82ddfd6c5eb8cc9/tumblr_mnw0qyJiM51r6syygo1_r1_500.gif' }
+
+    %img{ src: '/http://25.media.tumblr.com/ab3f57251da1addfe82ddfd6c5eb8cc9/tumblr_mnw0qyJiM51r6syygo1_r1_500.gif', id: 'demo' }
+
+    #github_link
+      %a{ href: 'https://github.com/negipo/lgtm' }
+        github
