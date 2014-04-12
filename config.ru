@@ -1,18 +1,13 @@
 require 'rack'
 require './app'
 
-if memcache_servers = ENV["MEMCACHE_SERVERS"]
-  if ENV['DEVELOPMENT']
-    use Rack::Cache,
-      verbose: true,
-      metastore:   "memcached://#{memcache_servers}",
-      entitystore: "memcached://#{memcache_servers}"
-  else
-    use Rack::Cache,
-      verbose: true,
-      metastore:   "memcached://#{memcache_servers}",
-      entitystore: "memcached://#{memcache_servers}"
-  end
+memcache_servers = ENV["MEMCACHE_SERVERS"]
+if memcache_servers
+  client = Dalli::Client.new(
+    memcache_servers,
+    value_max_bytes: 10485760
+  )
+  use Rack::Cache, verbose: true, metastore: client, entitystore: client
 end
 
 run Sinatra::Application
