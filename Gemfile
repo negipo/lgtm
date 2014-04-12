@@ -7,4 +7,5 @@ gem 'rack-cache'
 gem 'haml'
 gem 'rmagick', require: 'RMagick'
 gem 'dalli'
+gem 'pry'
 gem 'heroku-deflater', group: :production

@@ -67,20 +67,23 @@ module Lgtm
     LGTM_IMAGE_WIDTH = 1_000
 
     def initialize(blob)
-      @sources = ::Magick::ImageList.new.from_blob(blob)
+      @sources = ::Magick::ImageList.new.from_blob(blob).coalesce
     end
 
     def build
       images = ::Magick::ImageList.new
 
-      @sources.each do |source|
+      @sources.each_with_index do |source, index|
         images << lgtmify(source)
       end
 
       images.delay = @sources.delay
       images.iterations = 0
 
-      images.to_blob
+      images.
+        optimize_layers(Magick::OptimizeTransLayer).
+        deconstruct.
+        to_blob
     end
 
     private
@@ -101,9 +104,6 @@ module Lgtm
     end
 
     def lgtmify(source)
-      # Prevent centerize corruptions.
-      source.resize!(width, height)
-
       source.composite!(
         lgtm_image,
         ::Magick::CenterGravity,

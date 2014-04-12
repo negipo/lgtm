@@ -2,12 +2,18 @@ GEM
   remote: https://rubygems.org/
   specs:
     backports (3.6.0)
+    coderay (1.1.0)
     dalli (2.7.0)
     haml (4.0.5)
       tilt
     heroku-deflater (0.5.3)
       rack (>= 1.4.5)
+    method_source (0.8.2)
     multi_json (1.9.2)
+    pry (0.9.12.6)
+      coderay (~> 1.0)
+      method_source (~> 0.8)
+      slop (~> 3.4)
     rack (1.5.2)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -27,6 +33,7 @@ GEM
       rack-test
       sinatra (~> 1.4.0)
       tilt (~> 1.3)
+    slop (3.5.0)
     tilt (1.4.1)
 
 PLATFORMS
@@ -36,6 +43,7 @@ DEPENDENCIES
   dalli
   haml
   heroku-deflater
+  pry
   rack
   rack-cache
   rmagick
