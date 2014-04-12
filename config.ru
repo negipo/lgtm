@@ -47,4 +47,4 @@ if CacheConfiguration.available?
   use Rack::Cache, CacheConfiguration.options
 end
 
-run Sinatra::Application
+run Lgtm::App
