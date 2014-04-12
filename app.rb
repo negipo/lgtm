@@ -57,7 +57,7 @@ module Lgtm
       raw_uri = build_raw_uri_by_splat(request.path_info)
       response = fetch(raw_uri)
       unless /gif/ === response.content_type
-        return 'only gif supported'
+        return 'only animated gif supported'
       end
 
       content_type response.content_type
@@ -74,10 +74,11 @@ module Lgtm
 
     def build
       images = ::Magick::ImageList.new
-      width = @sources.first.columns
+
       @sources.each do |source|
-        images << lgtmify_each(source, width)
+        images << lgtmify(source)
       end
+
       images.delay = @sources.delay
       images.iterations = 0
 
@@ -86,17 +87,30 @@ module Lgtm
 
     private
 
-    def lgtm_image(width)
-      @lgtm_image ||= {}
-      scale = width.to_f / LGTM_IMAGE_WIDTH
-      return @lgtm_image[scale] if @lgtm_image[scale]
-
-      @lgtm_image[scale] = ::Magick::ImageList.new('./images/lgtm.gif').scale(scale)
+    def width
+      @sources.first.columns
     end
 
-    def lgtmify_each(source, width)
-      lgtm = lgtm_image(width)
-      source.composite!(lgtm, ::Magick::CenterGravity, ::Magick::OverCompositeOp)
+    def height
+      @sources.first.rows
+    end
+
+    def lgtm_image
+      return @lgtm_image if @lgtm_image
+
+      scale = width.to_f / LGTM_IMAGE_WIDTH
+      @lgtm_image = ::Magick::ImageList.new('./images/lgtm.gif').scale(scale)
+    end
+
+    def lgtmify(source)
+      # Prevent centerize corruptions.
+      source.resize!(width, height)
+
+      source.composite!(
+        lgtm_image,
+        ::Magick::CenterGravity,
+        ::Magick::OverCompositeOp
+      )
     end
   end
 end
