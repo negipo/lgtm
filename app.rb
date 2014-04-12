@@ -86,7 +86,7 @@ class Lgtm
     scale = width.to_f / LGTM_IMAGE_WIDTH
     return @lgtm_image[scale] if @lgtm_image[scale]
 
-    @lgtm_image[scale] = ::Magick::ImageList.new('./lgtm.gif').scale(scale)
+    @lgtm_image[scale] = ::Magick::ImageList.new('./images/lgtm.gif').scale(scale)
   end
 
   def lgtmify_each(source, width)
