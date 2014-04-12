@@ -2,7 +2,6 @@
 
 require 'bundler/setup'
 Bundler.require
-require 'sinatra/base'
 require 'net/http'
 require 'uri'
 

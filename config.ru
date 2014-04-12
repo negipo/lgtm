@@ -13,6 +13,7 @@ class CacheConfiguration
     def available?
       !servers.nil?
     end
+
     private
 
     def client
