@@ -7,3 +7,7 @@ task :clear_cache do
   CacheConfiguration.client.flush
   puts 'clear cache'
 end
+
+task :spec do
+  sh 'rspec', './spec/spec.rb'
+end

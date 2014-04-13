@@ -2,33 +2,17 @@
 
 require 'bundler/setup'
 Bundler.require
-require 'net/http'
 require 'uri'
 
 module Lgtm
   module Requestable
-    def fetch(raw_uri, limit=10)
-      raise ArgumentError if limit < limit
-
-      uri = URI.parse(raw_uri)
-      request = Net::HTTP::Get.new(uri.path)
-      response = Net::HTTP.start(uri.host, uri.port) {|http|
-        http.request(request)
-      }
-
-      case response
-      when Net::HTTPSuccess
-        response
-      when Net::HTTPRedirection, Net::HTTPFound
-        fetch(response['location'], limit - 1)
-      else
-        raise Exception.new('network error')
-      end
+    def fetch(raw_uri)
+      RestClient.get(raw_uri)
     end
 
     def raw_uri_by_path_info
       uri = request.path_info.sub(/\A\//, '')
-      uri.sub(/\A(http):\//) do
+      uri.sub(/\A(https?):\//) do
         "#{$1}://"
       end
     end
@@ -53,12 +37,22 @@ module Lgtm
     get '/*' do
       cache_control :public, max_age: CACHE_MAX_AGE
 
-      response = fetch(raw_uri_by_path_info)
-      unless /gif/ === response.content_type
+      begin
+        response = fetch(raw_uri_by_path_info)
+      rescue RestClient::ResourceNotFound
+        status 404
+        return 'fetching image failed'
+      rescue
+        status 500
+        return 'fetching image failed'
+      end
+
+      unless /gif/ === response.headers[:content_type]
+        status 400
         return 'only animated gif supported'
       end
 
-      content_type response.content_type
+      content_type response.headers[:content_type]
       Lgtm::ImageBuilder.new(response.body).build
     end
   end
@@ -112,3 +106,5 @@ module Lgtm
     end
   end
 end
+
+Lgtm::App.run!
