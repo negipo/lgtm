@@ -106,5 +106,3 @@ module Lgtm
     end
   end
 end
-
-Lgtm::App.run!
