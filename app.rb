@@ -31,9 +31,6 @@ module Lgtm
       haml :index
     end
 
-    get '/favicon.ico' do
-    end
-
     get '/*' do
       cache_control :public, max_age: CACHE_MAX_AGE
 
