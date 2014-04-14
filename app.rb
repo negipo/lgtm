@@ -72,8 +72,7 @@ module Lgtm
       images.iterations = 0
 
       images.
-        optimize_layers(Magick::OptimizeTransLayer).
-        deconstruct.
+        optimize_layers(Magick::OptimizeLayer).
         to_blob
     end
 
