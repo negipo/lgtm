@@ -6,7 +6,14 @@ require 'uri'
 
 module Lgtm
   module Requestable
+    USER_AGENT = "lgtm web app - mailto: #{ENV['MAIL_ADDRESS']}"
+
+    def robots
+      @robots ||= Robots.new(USER_AGENT)
+    end
+
     def fetch(raw_uri)
+      raise NotAllowedUrlException unless robots.allowed?(raw_uri)
       RestClient.get(raw_uri)
     end
 
@@ -16,12 +23,35 @@ module Lgtm
         "#{$1}://"
       end
     end
+
+    class NotAllowedUrlException < Exception; end
   end
 
   class App < Sinatra::Application
     CACHE_MAX_AGE = 10 * 24 * 60 * 60 # 10 days
 
     include Requestable
+    class NotLgtmableImageException < Exception; end
+
+    error RestClient::ResourceNotFound do
+      status 404
+      'image not found'
+    end
+
+    error RestClient::Forbidden do
+      status 403
+      'image forbidden'
+    end
+
+    error NotAllowedUrlException do
+      status 403
+      'image not accessable'
+    end
+
+    error NotLgtmableImageException do
+      status 400
+      return 'only animated gif supported'
+    end
 
     get '/' do
       @domain = [
@@ -34,19 +64,10 @@ module Lgtm
     get '/*' do
       cache_control :public, max_age: CACHE_MAX_AGE
 
-      begin
-        response = fetch(raw_uri_by_path_info)
-      rescue RestClient::ResourceNotFound
-        status 404
-        return 'fetching image failed'
-      rescue
-        status 500
-        return 'fetching image failed'
-      end
+      response = fetch(raw_uri_by_path_info)
 
       unless /gif/ === response.headers[:content_type]
-        status 400
-        return 'only animated gif supported'
+        raise NotLgtmableImageException
       end
 
       content_type response.headers[:content_type]

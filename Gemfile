@@ -9,6 +9,7 @@ gem 'rmagick', require: 'RMagick'
 gem 'dalli'
 gem 'pry'
 gem 'rest_client'
+gem 'robots'
 
 group :production do
   gem 'heroku-deflater', group: :production

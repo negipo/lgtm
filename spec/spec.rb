@@ -3,7 +3,7 @@ require 'pry'
 
 describe 'localhost' do
   before(:all) do
-    puts 'You should run "rackup config.ru -p 4567" before spec'
+    puts 'You should run "RACKENV=production rackup config.ru -p 4567" before spec'
   end
 
   it 'converts with redirect link' do
@@ -28,5 +28,11 @@ describe 'localhost' do
     expect {
       RestClient.get('http://localhost:4567/http://example.com/hoge')
     }.to raise_error(RestClient::ResourceNotFound)
+  end
+
+  it 'does not convert that not robots.txt allowed' do
+    expect {
+      RestClient.get('http://localhost:4567/http://yelp.com/')
+    }.to raise_error(RestClient::Forbidden)
   end
 end
