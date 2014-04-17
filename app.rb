@@ -13,6 +13,7 @@ module Lgtm
     end
 
     def fetch(raw_uri)
+      raise NotUrlException unless URI.regexp === raw_uri
       raise NotAllowedUrlException unless robots.allowed?(raw_uri)
       RestClient.get(raw_uri)
     end
@@ -24,6 +25,7 @@ module Lgtm
       end
     end
 
+    class NotUrlException < Exception; end
     class NotAllowedUrlException < Exception; end
   end
 
@@ -41,6 +43,11 @@ module Lgtm
     error RestClient::Forbidden do
       status 403
       'image forbidden'
+    end
+
+    error NotUrlException do
+      status 403
+      'not url'
     end
 
     error NotAllowedUrlException do
