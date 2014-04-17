@@ -6,7 +6,7 @@ require 'uri'
 
 module Lgtm
   module Requestable
-    USER_AGENT = "lgtm web app - mailto: #{ENV['MAIL_ADDRESS']}"
+    USER_AGENT = "lgtm web app - http://lgtm.herokuapp.com/ - mailto: #{ENV['MAIL_ADDRESS']}"
 
     def robots
       @robots ||= Robots.new(USER_AGENT)
