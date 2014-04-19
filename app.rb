@@ -19,7 +19,7 @@ module Lgtm
     end
 
     def raw_uri_by_path_info
-      uri = request.path_info.sub(/\A\//, '')
+      uri = request.path_info.sub(/\A\/(?:glitch\/)?/, '')
       uri.sub(/\A(https?):\//) do
         "#{$1}://"
       end
@@ -78,22 +78,29 @@ module Lgtm
       end
 
       content_type response.headers[:content_type]
-      Lgtm::ImageBuilder.new(response.body).build
+      Lgtm::ImageBuilder.new(response.body, glitch: glitch_mode?).build
+    end
+
+    def glitch_mode?
+      /\A\/glitch\// === request.path_info
     end
   end
 
   class ImageBuilder
     LGTM_IMAGE_WIDTH = 1_000
 
-    def initialize(blob)
+    def initialize(blob, options = {})
       @sources = ::Magick::ImageList.new.from_blob(blob).coalesce
+      @options = options.reverse_merge(glitch: false)
     end
 
     def build
       images = ::Magick::ImageList.new
 
       @sources.each_with_index do |source, index|
-        images << lgtmify(source)
+        target = lgtmify(source)
+        target = glitch(target) if @options[:glitch]
+        images << target
       end
 
       images.delay = @sources.delay
@@ -119,6 +126,19 @@ module Lgtm
 
       scale = width.to_f / LGTM_IMAGE_WIDTH
       @lgtm_image = ::Magick::ImageList.new('./images/lgtm.gif').scale(scale)
+    end
+
+    def glitch(source)
+      colors = []
+      color_size = source.colors
+      blob = source.to_blob
+      color_size.times do |index|
+        colors << blob[20 + index, 3]
+      end
+      color_size.times do |index|
+        blob[20 + index, 3] = colors.sample
+      end
+      Magick::Image.from_blob(blob).first
     end
 
     def lgtmify(source)
