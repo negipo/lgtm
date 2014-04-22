@@ -100,10 +100,10 @@ module Lgtm
       @sources.each_with_index do |source, index|
         target = lgtmify(source)
         target = glitch(target) if @options[:glitch]
+        target.delay = source.delay
         images << target
       end
 
-      images.delay = @sources.delay
       images.iterations = 0
 
       images.
