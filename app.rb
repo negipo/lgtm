@@ -19,7 +19,7 @@ module Lgtm
     end
 
     def raw_uri_by_path_info
-      uri = request.path_info.sub(/\A\/(?:glitch\/)?/, '')
+      uri = request.path_info.sub(/\A\/(?:(?:glitch|with_comments)\/)?/, '')
       uri.sub(/\A(https?):\//) do
         "#{$1}://"
       end
@@ -78,11 +78,19 @@ module Lgtm
       end
 
       content_type response.headers[:content_type]
-      Lgtm::ImageBuilder.new(response.body, glitch: glitch_mode?).build
+      Lgtm::ImageBuilder.new(
+        response.body,
+        glitch: glitch?,
+        with_comments: with_comments?
+      ).build
     end
 
-    def glitch_mode?
+    def glitch?
       /\A\/glitch\// === request.path_info
+    end
+
+    def with_comments?
+      /\A\/with_comments\// === request.path_info
     end
   end
 
@@ -91,7 +99,7 @@ module Lgtm
 
     def initialize(blob, options = {})
       @sources = ::Magick::ImageList.new.from_blob(blob).coalesce
-      @options = options.reverse_merge(glitch: false)
+      @options = options.reverse_merge(glitch: false, with_comments: false)
     end
 
     def build
@@ -125,7 +133,12 @@ module Lgtm
       return @lgtm_image if @lgtm_image
 
       scale = width.to_f / LGTM_IMAGE_WIDTH
-      @lgtm_image = ::Magick::ImageList.new('./images/lgtm.gif').scale(scale)
+      if @options[:with_comments]
+        path = './images/lgtm_with_comments.gif'
+      else
+        path = './images/lgtm.gif'
+      end
+      @lgtm_image = ::Magick::ImageList.new(path).scale(scale)
     end
 
     def glitch(source)
