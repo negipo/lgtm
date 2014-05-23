@@ -3,7 +3,7 @@ require 'pry'
 
 describe 'localhost' do
   before(:all) do
-    puts 'You should run "RACKENV=production rackup config.ru -p 4567" before spec'
+    puts 'You should run "RACK_ENV=production rackup config.ru -p 4567" before spec'
   end
 
   it 'converts with redirect link' do
@@ -30,9 +30,21 @@ describe 'localhost' do
     response.code.should == 200
   end
 
-  it 'does not convert png' do
+  it 'converts png' do
+      response = RestClient.get('http://localhost:4567/http://37.media.tumblr.com/b8e0f7522f720f859569d4ae8068fc20/tumblr_n5loilzE0n1qz529lo1_400.png')
+      response.size.should > 10000
+      response.code.should == 200
+  end
+
+  it 'converts jpg' do
+      response = RestClient.get('http://localhost:4567/http://localhost:4567/glitch/http://24.media.tumblr.com/6b1ac9669f0b009bb48bf8b79dc5ec87/tumblr_n53k0jLWH71qz5nxmo1_500.jpg')
+      response.size.should > 10000
+      response.code.should == 200
+  end
+
+  it 'does not convert except for images' do
     expect {
-      RestClient.get('http://localhost:4567/https://pbs.twimg.com/profile_images/1180035163/negipo.png')
+      RestClient.get('http://localhost:4567/http://example.com/')
     }.to raise_error(RestClient::BadRequest)
   end
 
