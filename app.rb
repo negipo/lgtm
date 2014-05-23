@@ -57,7 +57,7 @@ module Lgtm
 
     error NotLgtmableImageException do
       status 400
-      return 'only animated gif supported'
+      return 'only images supported'
     end
 
     get '/' do
@@ -73,7 +73,7 @@ module Lgtm
 
       response = fetch(raw_uri_by_path_info)
 
-      unless /gif/ === response.headers[:content_type]
+      unless /\Aimage\// === response.headers[:content_type]
         raise NotLgtmableImageException
       end
 
