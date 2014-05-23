@@ -32,7 +32,7 @@ describe 'localhost' do
 
   it 'does not convert png' do
     expect {
-      RestClient.get('http://localhost:4567/https://pbs.twimg.com/profile_images/1180035163/negipo.png')
+      RestClient.get('http://localhost:4567/http://37.media.tumblr.com/b8e0f7522f720f859569d4ae8068fc20/tumblr_n5loilzE0n1qz529lo1_400.png')
     }.to raise_error(RestClient::BadRequest)
   end
 
