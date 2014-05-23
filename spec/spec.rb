@@ -3,7 +3,7 @@ require 'pry'
 
 describe 'localhost' do
   before(:all) do
-    puts 'You should run "RACKENV=production rackup config.ru -p 4567" before spec'
+    puts 'You should run "RACK_ENV=production rackup config.ru -p 4567" before spec'
   end
 
   it 'converts with redirect link' do
