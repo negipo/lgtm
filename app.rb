@@ -57,7 +57,7 @@ module Lgtm
 
     error NotLgtmableImageException do
       status 400
-      return 'only animated gif supported'
+      'only animated gif supported'
     end
 
     get '/' do
