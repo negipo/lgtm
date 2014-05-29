@@ -15,7 +15,7 @@ module Lgtm
     def fetch(raw_uri)
       raise NotUrlException unless URI.regexp === raw_uri
       raise NotAllowedUrlException unless robots.allowed?(raw_uri)
-      RestClient.get(raw_uri)
+      RestClient.get(raw_uri, user_agent: USER_AGENT)
     end
 
     def raw_uri_by_path_info
