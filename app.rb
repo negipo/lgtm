@@ -7,6 +7,7 @@ require 'uri'
 module Lgtm
   module Requestable
     USER_AGENT = "lgtm web app - http://lgtm.herokuapp.com/ - mailto: #{ENV['MAIL_ADDRESS']}"
+    MAX_CONTENT_LENGTH = (ENV['MAX_CONTENT_LENGTH'] || 2_000_000).to_i
 
     def robots
       @robots ||= Robots.new(USER_AGENT)
@@ -15,6 +16,8 @@ module Lgtm
     def fetch(raw_uri)
       raise NotUrlException unless URI.regexp === raw_uri
       raise NotAllowedUrlException unless robots.allowed?(raw_uri)
+      content_length = RestClient.head(raw_uri, user_aget: USER_AGENT).headers[:content_length]
+      raise OverMaxContentLengthException if content_length.to_i > MAX_CONTENT_LENGTH
       RestClient.get(raw_uri, user_agent: USER_AGENT)
     end
 
@@ -27,6 +30,7 @@ module Lgtm
 
     class NotUrlException < Exception; end
     class NotAllowedUrlException < Exception; end
+    class OverMaxContentLengthException < Exception; end
   end
 
   class App < Sinatra::Application
@@ -58,6 +62,11 @@ module Lgtm
     error NotLgtmableImageException do
       status 400
       'only animated gif supported'
+    end
+
+    error OverMaxContentLengthException do
+      status 403
+      'over max content_length'
     end
 
     get '/' do

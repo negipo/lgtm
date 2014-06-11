@@ -47,4 +47,10 @@ describe 'localhost' do
       RestClient.get('http://localhost:4567/http://yelp.com/')
     }.to raise_error(RestClient::Forbidden)
   end
+
+  it 'does not convert image having over max content_length' do
+    expect {
+      RestClient.get('http://localhost:4567/http://giant.gfycat.com/UnfinishedSelfreliantAnkole.gif')
+    }.to raise_error(RestClient::Forbidden)
+  end
 end
