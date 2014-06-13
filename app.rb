@@ -9,13 +9,13 @@ module Lgtm
     USER_AGENT = "lgtm web app - http://lgtm.herokuapp.com/ - mailto: #{ENV['MAIL_ADDRESS']}"
     MAX_CONTENT_LENGTH = (ENV['MAX_CONTENT_LENGTH'] || 2_000_000).to_i
 
-    def robots
-      @robots ||= Robots.new(USER_AGENT)
+    def morito_client
+      @morito_client ||= Morito::Client.new(USER_AGENT)
     end
 
     def fetch(raw_uri)
       raise NotUrlException unless URI.regexp === raw_uri
-      raise NotAllowedUrlException unless robots.allowed?(raw_uri)
+      raise NotAllowedUrlException unless morito_client.allowed?(raw_uri)
       content_length = RestClient.head(raw_uri, user_aget: USER_AGENT).headers[:content_length]
       raise OverMaxContentLengthException if content_length.to_i > MAX_CONTENT_LENGTH
       RestClient.get(raw_uri, user_agent: USER_AGENT)
