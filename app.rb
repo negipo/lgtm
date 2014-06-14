@@ -7,7 +7,7 @@ require 'uri'
 module Lgtm
   module Requestable
     USER_AGENT = "lgtm web app - http://lgtm.herokuapp.com/ - mailto: #{ENV['MAIL_ADDRESS']}"
-    MAX_CONTENT_LENGTH = (ENV['MAX_CONTENT_LENGTH'] || 2_000_000).to_i
+    MAX_CONTENT_LENGTH = (ENV['MAX_CONTENT_LENGTH'] || 2_097_152).to_i
 
     def morito_client
       @morito_client ||= Morito::Client.new(USER_AGENT)
