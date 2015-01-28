@@ -175,7 +175,7 @@ module Lgtm
     end
 
     def blur(source)
-      source.blur_image(0.0, 10.0)
+      source.blur_image(0.0, 5.0)
     end
 
     def lgtmify(source)
