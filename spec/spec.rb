@@ -24,6 +24,12 @@ describe 'localhost' do
     response.code.should == 200
   end
 
+  it 'enables blur mode' do
+    response = RestClient.get('http://localhost:4567/glitch/https://24.media.tumblr.com/b963175d1d3632506a8bafd9ea5029eb/tumblr_n3x2kv7QZo1tq47ppo1_500.gif')
+    response.size.should > 10000
+    response.code.should == 200
+  end
+
   it 'enables with_comments mode' do
     response = RestClient.get('http://localhost:4567/with_comments/https://24.media.tumblr.com/b963175d1d3632506a8bafd9ea5029eb/tumblr_n3x2kv7QZo1tq47ppo1_500.gif')
     response.size.should > 10000

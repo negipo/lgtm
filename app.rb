@@ -22,7 +22,7 @@ module Lgtm
     end
 
     def raw_uri_by_path_info
-      uri = request.path_info.sub(/\A\/(?:(?:glitch|with_comments)\/)?/, '')
+      uri = request.path_info.sub(/\A\/(?:(?:glitch|with_comments|blur)\/)?/, '')
       uri.sub(/\A(https?):\//) do
         "#{$1}://"
       end
@@ -90,12 +90,17 @@ module Lgtm
       Lgtm::ImageBuilder.new(
         response.body,
         glitch: glitch?,
+        blur: blur?,
         with_comments: with_comments?
       ).build
     end
 
     def glitch?
       /\A\/glitch\// === request.path_info
+    end
+
+    def blur?
+      /\A\/blur\// === request.path_info
     end
 
     def with_comments?
@@ -108,14 +113,20 @@ module Lgtm
 
     def initialize(blob, options = {})
       @sources = ::Magick::ImageList.new.from_blob(blob).coalesce
-      @options = options.reverse_merge(glitch: false, with_comments: false)
+      @options = options.reverse_merge(
+        glitch: false,
+        blur: false,
+        with_comments: false,
+      )
     end
 
     def build
       images = ::Magick::ImageList.new
 
       @sources.each_with_index do |source, index|
-        target = lgtmify(source)
+        target = source
+        target = blur(target) if @options[:blur]
+        target = lgtmify(target)
         target = glitch(target) if @options[:glitch]
         target.delay = source.delay
         images << target
@@ -161,6 +172,10 @@ module Lgtm
         blob[20 + index, 3] = colors.sample
       end
       Magick::Image.from_blob(blob).first
+    end
+
+    def blur(source)
+      source.blur_image(0.0, 10.0)
     end
 
     def lgtmify(source)
