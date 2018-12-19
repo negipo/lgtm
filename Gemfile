@@ -8,7 +8,7 @@ gem 'haml'
 gem 'rmagick', require: 'RMagick'
 gem 'dalli'
 gem 'pry'
-gem 'rest_client'
+gem 'rest-client'
 gem 'morito'
 
 group :production do
